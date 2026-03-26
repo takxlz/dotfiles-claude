@@ -9,11 +9,12 @@ CLAUDE_DIR="$HOME/.claude"
 
 # リンク対象の定義 (ソース:デスティネーション)
 declare -a LINKS=(
-  "CLAUDE.md:CLAUDE.md"
+  "CLAUDE-global.md:CLAUDE.md"
   "settings.json:settings.json"
   "skills:skills"
   "agents:agents"
   "rules:rules"
+  "hooks:hooks"
 )
 
 for entry in "${LINKS[@]}"; do

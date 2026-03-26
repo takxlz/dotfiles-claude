@@ -9,5 +9,66 @@
         "repo": "anthropics/skills"
       }
     }
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ~/.claude/hooks/block-no-verify.js"
+          }
+        ],
+        "description": "Block --no-verify flag to protect git hooks"
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ~/.claude/hooks/block-large-file.js"
+          }
+        ],
+        "description": "Block creation of files larger than 800 lines"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ~/.claude/hooks/warn-console-log.js"
+          }
+        ],
+        "description": "Warn about console.log statements in edited code"
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ~/.claude/hooks/auto-format.js",
+            "timeout": 15
+          }
+        ],
+        "description": "Auto-format files after edits (prettier/ruff/rustfmt)"
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "osascript -e 'display notification \"Task completed\" with title \"Claude Code\"'",
+            "async": true,
+            "timeout": 5
+          }
+        ],
+        "description": "Send macOS desktop notification when Claude responds"
+      }
+    ]
   }
 }
