@@ -23,6 +23,26 @@
         "description": "Block --no-verify flag to protect git hooks"
       },
       {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ~/.claude/hooks/block-destructive-git.js"
+          }
+        ],
+        "description": "Block destructive git commands (push --force, reset --hard, etc.)"
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ~/.claude/hooks/check-conventional-commit.js"
+          }
+        ],
+        "description": "Validate Conventional Commits format on git commit"
+      },
+      {
         "matcher": "Write",
         "hooks": [
           {

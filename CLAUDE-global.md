@@ -6,32 +6,38 @@ Always respond in Japanese. Write code comments in Japanese. Use English for var
 
 ## Agent Orchestration
 
-Automatically use agents in the following situations:
+### When to Use Subagents
 
-- Complex feature requests or refactoring → `planner`
-- After writing or modifying code → `code-reviewer`
-- Security-sensitive code (auth, input handling, API endpoints) → `security-reviewer`
-- Build or type errors → `build-error-resolver`
-- Bug fixes or new feature implementation → `tdd-guide`
-- Dead code cleanup → `refactor-cleaner`
+Use subagents only for tasks that benefit from a separate context:
+
+- Complex feature planning → `planner`
 - System design or architectural decisions → `architect`
-- Documentation and codemap updates → `doc-updater`
-- Library, framework, or API documentation lookup → `docs-lookup`
-- SQL, schema design, DB performance → `database-reviewer`
+- Build or type errors (iterative fix loop) → `build-error-resolver`
+- Security-sensitive code (auth, input handling, API endpoints, secrets) → `security-reviewer`
 
-### Language-Specific Review
+### Everything Else — Do It Yourself
 
-Use language-specific review agents based on the target language:
+The main agent handles these directly, using rules (auto-applied) and skills (on-demand):
 
-- TypeScript / JavaScript → `typescript-reviewer`
-- Rust → `rust-reviewer` (build errors → `rust-build-resolver`)
-- Java / Spring Boot → `java-reviewer` (build errors → `java-build-resolver`)
-- Python → `python-reviewer`
+- **Code review** — Review your own code changes using rules and skills. Only report issues with >80% confidence.
+- **Test-driven development** — Write tests before implementation. Use `tdd-workflow` skill for detailed patterns.
+- **Documentation updates** — Update README.md, CLAUDE.md, API docs, comments, and CHANGELOG.md when code changes.
+- **Refactoring** — Identify and remove dead code, consolidate duplicates.
+- **Database work** — Use `postgres-patterns` and `database-migrations` skills.
+- **Documentation lookup** — Use WebSearch / WebFetch directly.
+
+### Security Escalation
+
+When you find a CRITICAL security issue (hardcoded secrets, injection vulnerabilities, auth bypass):
+
+1. Flag the issue immediately
+2. Invoke `security-reviewer` for a comprehensive audit
+3. `security-reviewer` findings take precedence on security matters
 
 ### Execution Policy
 
-- Run independent tasks in parallel
-- Run dependent tasks sequentially
+- Run independent subagents in parallel
+- Run dependent subagents sequentially
 
 ## Documentation Updates on Code Changes
 
@@ -40,7 +46,7 @@ When code is changed, always update related documentation:
 - README.md (usage, setup instructions, configuration examples)
 - CLAUDE.md (project structure, commands, architecture descriptions)
 - API documentation (endpoints, parameters, responses)
-- Comments and JSDoc (function signatures, behavior changes)
+- Comments and doc comments (function signatures, behavior changes)
 - CHANGELOG.md (if it exists)
 
 Verify consistency between changes and documentation before completing work.

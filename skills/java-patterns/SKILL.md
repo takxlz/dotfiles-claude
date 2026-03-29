@@ -1,23 +1,155 @@
 ---
-name: springboot-patterns
-description: Spring Boot architecture patterns, REST API design, layered services, data access, caching, async processing, and logging. Use for Java Spring Boot backend work.
+name: java-patterns
+description: "Java 17+ coding standards and Spring Boot architecture patterns: naming, immutability, Optional, streams, exceptions, REST API design, layered services, data access, caching, async processing, and logging."
 origin: ECC
 ---
 
-# Spring Boot Development Patterns
+# Java / Spring Boot Development Patterns
 
-Spring Boot architecture and API patterns for scalable, production-grade services.
+Java 17+ coding standards and Spring Boot architecture patterns for scalable, production-grade services.
 
 ## When to Activate
 
+- Writing or reviewing Java code in Spring Boot projects
+- Enforcing naming, immutability, or exception handling conventions
+- Working with records, sealed classes, or pattern matching (Java 17+)
 - Building REST APIs with Spring MVC or WebFlux
 - Structuring controller → service → repository layers
 - Configuring Spring Data JPA, caching, or async processing
 - Adding validation, exception handling, or pagination
-- Setting up profiles for dev/staging/production environments
-- Implementing event-driven patterns with Spring Events or Kafka
 
-## REST API Structure
+## Core Principles
+
+- Prefer clarity over cleverness
+- Immutable by default; minimize shared mutable state
+- Fail fast with meaningful exceptions
+- Consistent naming and package structure
+
+## Naming
+
+```java
+// ✅ Classes/Records: PascalCase
+public class MarketService {}
+public record Money(BigDecimal amount, Currency currency) {}
+
+// ✅ Methods/fields: camelCase
+private final MarketRepository marketRepository;
+public Market findBySlug(String slug) {}
+
+// ✅ Constants: UPPER_SNAKE_CASE
+private static final int MAX_PAGE_SIZE = 100;
+```
+
+## Immutability
+
+```java
+// ✅ Favor records and final fields
+public record MarketDto(Long id, String name, MarketStatus status) {}
+
+public class Market {
+  private final Long id;
+  private final String name;
+  // getters only, no setters
+}
+```
+
+## Optional Usage
+
+```java
+// ✅ Return Optional from find* methods
+Optional<Market> market = marketRepository.findBySlug(slug);
+
+// ✅ Map/flatMap instead of get()
+return market
+    .map(MarketResponse::from)
+    .orElseThrow(() -> new EntityNotFoundException("Market not found"));
+```
+
+## Streams Best Practices
+
+```java
+// ✅ Use streams for transformations, keep pipelines short
+List<String> names = markets.stream()
+    .map(Market::name)
+    .filter(Objects::nonNull)
+    .toList();
+
+// ❌ Avoid complex nested streams; prefer loops for clarity
+```
+
+## Generics and Type Safety
+
+- Avoid raw types; declare generic parameters
+- Prefer bounded generics for reusable utilities
+
+```java
+public <T extends Identifiable> Map<Long, T> indexById(Collection<T> items) { ... }
+```
+
+## Exceptions
+
+- Use unchecked exceptions for domain errors; wrap technical exceptions with context
+- Create domain-specific exceptions (e.g., `MarketNotFoundException`)
+- Avoid broad `catch (Exception ex)` unless rethrowing/logging centrally
+
+```java
+throw new MarketNotFoundException(slug);
+```
+
+## Null Handling
+
+- Accept `@Nullable` only when unavoidable; otherwise use `@NonNull`
+- Use Bean Validation (`@NotNull`, `@NotBlank`) on inputs
+
+## Logging (SLF4J)
+
+```java
+@Service
+public class ReportService {
+  private static final Logger log = LoggerFactory.getLogger(ReportService.class);
+
+  public Report generate(Long marketId) {
+    log.info("generate_report marketId={}", marketId);
+    try {
+      // logic
+    } catch (Exception ex) {
+      log.error("generate_report_failed marketId={}", marketId, ex);
+      throw ex;
+    }
+    return new Report();
+  }
+}
+```
+
+## Code Smells to Avoid
+
+- Long parameter lists → use DTO/builders
+- Deep nesting → early returns
+- Magic numbers → named constants
+- Static mutable state → prefer dependency injection
+- Silent catch blocks → log and act or rethrow
+
+## Project Structure (Maven/Gradle)
+
+```
+src/main/java/com/example/app/
+  config/
+  controller/
+  service/
+  repository/
+  domain/
+  dto/
+  util/
+src/main/resources/
+  application.yml
+src/test/java/... (mirrors main)
+```
+
+---
+
+## Spring Boot Patterns
+
+### REST API Structure
 
 ```java
 @RestController
@@ -46,7 +178,7 @@ class MarketController {
 }
 ```
 
-## Repository Pattern (Spring Data JPA)
+### Repository Pattern (Spring Data JPA)
 
 ```java
 public interface MarketRepository extends JpaRepository<MarketEntity, Long> {
@@ -55,7 +187,7 @@ public interface MarketRepository extends JpaRepository<MarketEntity, Long> {
 }
 ```
 
-## Service Layer with Transactions
+### Service Layer with Transactions
 
 ```java
 @Service
@@ -75,7 +207,7 @@ public class MarketService {
 }
 ```
 
-## DTOs and Validation
+### DTOs and Validation
 
 ```java
 public record CreateMarketRequest(
@@ -91,7 +223,7 @@ public record MarketResponse(Long id, String name, MarketStatus status) {
 }
 ```
 
-## Exception Handling
+### Exception Handling
 
 ```java
 @ControllerAdvice
@@ -118,7 +250,7 @@ class GlobalExceptionHandler {
 }
 ```
 
-## Caching
+### Caching
 
 Requires `@EnableCaching` on a configuration class.
 
@@ -143,7 +275,7 @@ public class MarketCacheService {
 }
 ```
 
-## Async Processing
+### Async Processing
 
 Requires `@EnableAsync` on a configuration class.
 
@@ -158,27 +290,7 @@ public class NotificationService {
 }
 ```
 
-## Logging (SLF4J)
-
-```java
-@Service
-public class ReportService {
-  private static final Logger log = LoggerFactory.getLogger(ReportService.class);
-
-  public Report generate(Long marketId) {
-    log.info("generate_report marketId={}", marketId);
-    try {
-      // logic
-    } catch (Exception ex) {
-      log.error("generate_report_failed marketId={}", marketId, ex);
-      throw ex;
-    }
-    return new Report();
-  }
-}
-```
-
-## Middleware / Filters
+### Middleware / Filters
 
 ```java
 @Component
@@ -200,14 +312,14 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
 }
 ```
 
-## Pagination and Sorting
+### Pagination and Sorting
 
 ```java
 PageRequest page = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
 Page<Market> results = marketService.list(page);
 ```
 
-## Error-Resilient External Calls
+### Error-Resilient External Calls
 
 ```java
 public <T> T withRetry(Supplier<T> supplier, int maxRetries) {
@@ -231,10 +343,11 @@ public <T> T withRetry(Supplier<T> supplier, int maxRetries) {
 }
 ```
 
-## Rate Limiting (Filter + Bucket4j)
+### Rate Limiting (Filter + Bucket4j)
 
 **Security Note**: The `X-Forwarded-For` header is untrusted by default because clients can spoof it.
 Only use forwarded headers when:
+
 1. Your app is behind a trusted reverse proxy (nginx, AWS ALB, etc.)
 2. You have registered `ForwardedHeaderFilter` as a bean
 3. You have configured `server.forward-headers-strategy=NATIVE` or `FRAMEWORK` in application properties
@@ -293,22 +406,46 @@ public class RateLimitFilter extends OncePerRequestFilter {
 }
 ```
 
-## Background Jobs
+### Background Jobs
 
-Use Spring’s `@Scheduled` or integrate with queues (e.g., Kafka, SQS, RabbitMQ). Keep handlers idempotent and observable.
+Use Spring's `@Scheduled` or integrate with queues (e.g., Kafka, SQS, RabbitMQ). Keep handlers idempotent and observable.
 
-## Observability
+### Observability
 
 - Structured logging (JSON) via Logback encoder
 - Metrics: Micrometer + Prometheus/OTel
 - Tracing: Micrometer Tracing with OpenTelemetry or Brave backend
 
-## Production Defaults
+### Workflow and State Machine Patterns
+
+- **Idempotency** — Use idempotency keys for operations that must not duplicate (payments, notifications)
+- **State transitions** — Validate transitions explicitly; reject illegal moves (e.g., `COMPLETED → PENDING`)
+- **Compensation** — Non-atomic multi-step operations need compensating actions on failure (saga pattern)
+- **Retry with jitter** — Exponential backoff + random jitter to avoid thundering herd
+- **Dead-letter handling** — Failed messages go to a dead-letter queue; never silently drop events
+
+```java
+// State transition validation
+public void transition(Order order, OrderStatus newStatus) {
+    if (!order.getStatus().canTransitionTo(newStatus)) {
+        throw new IllegalStateTransitionException(order.getStatus(), newStatus);
+    }
+    order.setStatus(newStatus);
+}
+```
+
+### Production Defaults
 
 - Prefer constructor injection, avoid field injection
 - Enable `spring.mvc.problemdetails.enabled=true` for RFC 7807 errors (Spring Boot 3+)
 - Configure HikariCP pool sizes for workload, set timeouts
 - Use `@Transactional(readOnly = true)` for queries
 - Enforce null-safety via `@NonNull` and `Optional` where appropriate
+
+### Testing
+
+- JUnit 5 + AssertJ for fluent assertions
+- Mockito for mocking; avoid partial mocks where possible
+- Favor deterministic tests; no hidden sleeps
 
 **Remember**: Keep controllers thin, services focused, repositories simple, and errors handled centrally. Optimize for maintainability and testability.

@@ -1,107 +1,148 @@
 ---
 name: note
-description: 会話の中で得た知見・学びをマークダウンファイルに出力するスキル。ユーザーが「/note」と入力したとき、または「まとめて」「ノートにして」「学びを記録」などナレッジの記録を求めたときに使う。会話中に議論した技術的な要点、ユーザーが疑問に思ったこと、ハマったポイントとその解決方法を構造化して記録する。
+description: A skill that outputs knowledge and insights gained during a conversation as a markdown file. Use when the user types "/note", or requests knowledge recording such as "summarize", "make a note", or "record learnings". Structures and records technical key points discussed in the conversation, questions the user had, and issues encountered along with their solutions.
 ---
 
-# ナレッジノート生成スキル
+# Knowledge Note Generation Skill
 
-会話で得た知見を `~/Dropbox/dev/ナレッジ/` 配下にマークダウンファイルとして保存する。
+Save knowledge gained from conversations as markdown files in the `note/` directory under the working directory.
 
-## 出力先
+## Procedure
 
-- ベースディレクトリ: `~/Dropbox/dev/ナレッジ/`
-- カテゴリごとにサブディレクトリを作成する（例: `Java/`, `Git/`, `Log4j/` など）
-- カテゴリはトピックの技術領域から判断する。既存のディレクトリに該当するものがあればそれを使い、なければ新規作成する
-- 保存前に `ls ~/Dropbox/dev/ナレッジ/` で既存カテゴリを確認すること
+1. Review the conversation content and identify topics worth recording
+2. Determine the category for each topic (technical research / troubleshooting / design decision / learning)
+3. If a conversation has multiple topics that would be referenced independently, split them into separate files. If they are closely related, combine them into one file
+4. Run `ls ./note/` to check existing files (create the directory with `mkdir -p ./note/` if it doesn't exist)
+5. If an existing file matches the topic, ask the user: "Append to `[filename]` or create a new file?"
+6. Based on the template, adjust the structure to fit the content, then create and save the markdown file
+7. Tell the user the full path of the saved file. Suggest moving it to a subdirectory based on the topic's technical domain (e.g., `./note/Java/`)
 
-## ファイル名
+## Output Destination
 
-- トピックベースで命名する
-- 形式: `トピック名.md`（例: `PatternLayoutのスタックトレース描画.md`）
-- トピック名は具体的に。「Javaのメモ」のような曖昧な名前は避ける
+- Save location: `./note/` (directly under the working directory)
+- Create `./note/` if it does not exist
+- Do not automatically create subdirectories. Only suggest them and let the user decide
 
-## マークダウンの構成
+## File Naming
 
-以下のテンプレートに従って出力する。会話の内容に応じてセクションの濃淡は調整してよいが、基本構造は守ること。
+- Use a specific topic name that can be searched for later
+- Format: `TopicName.md`
+- Good examples: `PatternLayoutのスタックトレース描画.md`, `RustのライフタイムとNLL.md`
+- Bad examples: `Javaのメモ.md` (too broad), `調査結果.md` (unclear what was investigated), `2026-03-29.md` (date alone doesn't indicate the content)
+
+## Templates
+
+Select the most appropriate template based on the conversation content. Templates are skeletons; feel free to add, omit, or reorder sections to fit the content.
+
+### Technical Research
+
+Summarize findings from investigating library specifications, language specifications, API behavior, etc.
 
 ```markdown
 # [トピック名]
 
-> [1〜2文の概要。何についての知見か]
+> [1〜2文の概要]
 
 ## 要点
 
-- 会話で得られた重要なポイントを箇条書きで記載
-- 技術的な事実、設計判断、ベストプラクティスなど
-- コードスニペットがあれば含める
+- ポイント1
+- ポイント2
 
-## 疑問と回答
+## Q&A
 
-会話中にユーザーが疑問に思った点と、それに対する回答・理解をまとめる。
+- Q: 疑問の内容
+  A: 調査で得られた答え
 
-### [疑問1]
-- **疑問**: 具体的な疑問の内容
-- **回答**: 調査・議論で得られた答え
+- Q: 別の疑問
+  A: 答え
 
-### [疑問2]
-...
+## 参考
 
-## ハマりポイントと解決策
-
-実際にハマった問題と、どのように解決したかを記録する。将来同じ問題に遭遇したときの参考になるように書く。
-
-### [問題の概要]
-- **症状**: 何が起きたか
-- **原因**: なぜ起きたか
-- **解決策**: どう解決したか
-- **学び**: この経験から得た教訓
-
-## 参考リンク・リソース
-
-- 会話中に参照したドキュメント、ソースコード、URLなど
+- URL やドキュメントへのリンク
 ```
 
-## 出力のガイドライン
+### Troubleshooting
 
-- 言語は日本語で出力する
-- 会話の内容を忠実に反映する。推測で情報を追加しない
-- 「疑問と回答」「ハマりポイントと解決策」は該当する内容がなければセクションごと省略してよい
-- コードスニペットは言語を指定してシンタックスハイライトを効かせる（```java など）
-- ユーザーが特に重要視していたポイントや、繰り返し確認していた内容は強調する
-- ファイル保存後、保存先のパスをユーザーに伝える
+Record problems encountered and the process of resolving them.
 
-## 複数トピックへの分割
+```markdown
+# [トピック名]
 
-会話の中で明確に異なるトピックが含まれている場合は、トピックごとに別ファイルに分けて出力する。分割の判断基準：
+> [1〜2文の概要]
 
-- 技術領域が異なる（例: Gitの使い方とJavaのAPI設計）
-- 問題の文脈が独立している（例: ビルドエラーの解消とテスト設計の議論）
-- 別々に参照される可能性が高い
+## 症状
 
-同じカテゴリに入る場合も、トピックが独立していれば別ファイルにする。逆に、密接に関連する内容は無理に分けない。
+何が起きたか
 
-## 既存ナレッジの更新
+## 原因
 
-同じトピックの既存ファイルがある場合は、新規作成ではなく既存ファイルを更新する。
+なぜ起きたか
 
-### 既存ファイルの検出
+## 解決策
 
-手順3で既存カテゴリを確認する際に、関連するカテゴリ内のファイル一覧も確認する。会話のトピックと一致する、または密接に関連する既存ファイルがあれば更新候補とする。
+どう解決したか（コード例があれば含める）
 
-### 更新の方針
+## 学び
 
-- 既存ファイルを見つけたら、ユーザーに「既存の `[ファイル名]` に追記・更新しますか？それとも別ファイルとして新規作成しますか？」と確認する
-- 更新する場合は既存ファイルを読み込み、既存の内容を保持しつつ新しい知見を追加・統合する
-- 既存の要点に新しい項目を追加する、既存の疑問に新たな知見を補足する、など
-- 既存の内容と矛盾する新しい情報がある場合は、古い情報を更新し、変更がわかるようにする
-- 既存の構造（セクション順、見出しレベル）は維持する
+この経験から得た教訓
+```
 
-## 手順
+### Design Decision
 
-1. 会話の内容を振り返り、要点・疑問・ハマりポイントを整理する
-2. トピックが複数ある場合、分割するか判断する
-3. `ls ~/Dropbox/dev/ナレッジ/` で既存カテゴリとファイルを確認する
-4. 既存ファイルに該当トピックがあれば、更新か新規作成かユーザーに確認する
-5. 適切なカテゴリディレクトリを選択または作成する
-6. テンプレートに沿ってマークダウンを作成または更新し、保存する
-7. 保存先のフルパスをユーザーに伝える（複数ファイルの場合は全てのパスを一覧で表示）
+Record technology selections, architectural decisions, and their rationale.
+
+```markdown
+# [トピック名]
+
+> [1〜2文の概要]
+
+## 背景
+
+何を解決したかったか
+
+## 選択肢
+
+- 案A: 概要、メリット、デメリット
+- 案B: 概要、メリット、デメリット
+
+## 判断
+
+どれを選んだか、なぜか
+
+## 補足
+
+制約条件、今後の懸念など
+```
+
+### Learning / TIL
+
+Quickly record short insights or things learned today.
+
+```markdown
+# [トピック名]
+
+> [1〜2文の概要]
+
+## 要点
+
+- ポイント1
+- ポイント2
+- ポイント3
+```
+
+## Formatting
+
+- Prioritize readability in raw markdown
+  - Use `#` and `##` as primary headings. Only use `###` and beyond when content requires deeper nesting
+  - Do not overuse bold labels (`**key**: value`). Omit them if bullet points convey the information sufficiently
+  - Prioritize conciseness over decoration
+- Output notes in Japanese
+- Faithfully reflect the conversation content. Do not add information through speculation or supplementation
+- Specify the language for code snippets (`java, `rust, etc.)
+- Place content that the user repeatedly confirmed or emphasized at the top of key points, or make it bold
+
+## Rules for Updating Existing Files
+
+- When adding new items to an existing key points list, append them at the end
+- When there is information that contradicts existing descriptions, replace the old description with the new content and add `(YYYY-MM-DD updated)` immediately after the changed section
+- Maintain the existing section structure (headings and order). If a new section is needed, add it at the end
