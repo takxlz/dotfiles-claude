@@ -12,6 +12,7 @@ Use subagents only for tasks that benefit from a separate context:
 
 - Complex feature planning → `planner`
 - System design or architectural decisions → `architect`
+- After writing or modifying code → `code-reviewer` (fresh context eliminates self-review bias)
 - Build or type errors (iterative fix loop) → `build-error-resolver`
 - Security-sensitive code (auth, input handling, API endpoints, secrets) → `security-reviewer`
 
@@ -19,7 +20,6 @@ Use subagents only for tasks that benefit from a separate context:
 
 The main agent handles these directly, using rules (auto-applied) and skills (on-demand):
 
-- **Code review** — Review your own code changes using rules and skills. Only report issues with >80% confidence.
 - **Test-driven development** — Write tests before implementation. Use `tdd-workflow` skill for detailed patterns.
 - **Documentation updates** — Update README.md, CLAUDE.md, API docs, comments, and CHANGELOG.md when code changes.
 - **Refactoring** — Identify and remove dead code, consolidate duplicates.
