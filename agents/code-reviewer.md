@@ -10,4 +10,5 @@ skills:
   - rust-patterns
   - java-patterns
   - security-review
+  - tdd-workflow
 ---
