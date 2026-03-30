@@ -15,7 +15,7 @@ Save knowledge gained from conversations as markdown files in the `note/` direct
 4. Run `ls ./note/` to check existing files (create the directory with `mkdir -p ./note/` if it doesn't exist)
 5. If an existing file matches the topic, ask the user: "Append to `[filename]` or create a new file?"
 6. Based on the template, adjust the structure to fit the content, then create and save the markdown file
-7. Tell the user the full path of the saved file. Suggest moving it to a subdirectory based on the topic's technical domain (e.g., `./note/Java/`)
+7. Tell the user the full path of the saved file. Suggest moving it to a subdirectory based on the topic's technical domain (e.g., `./note/Rust/`)
 
 ## Output Destination
 
@@ -27,8 +27,8 @@ Save knowledge gained from conversations as markdown files in the `note/` direct
 
 - Use a specific topic name that can be searched for later
 - Format: `TopicName.md`
-- Good examples: `PatternLayoutのスタックトレース描画.md`, `RustのライフタイムとNLL.md`
-- Bad examples: `Javaのメモ.md` (too broad), `調査結果.md` (unclear what was investigated), `2026-03-29.md` (date alone doesn't indicate the content)
+- Good examples: `PatternLayout-StackTrace-Rendering.md`, `Rust-Lifetimes-and-NLL.md`
+- Bad examples: `Python-Notes.md` (too broad), `Investigation-Results.md` (unclear what was investigated), `2026-03-29.md` (date alone doesn't indicate the content)
 
 ## Templates
 
@@ -39,26 +39,26 @@ Select the most appropriate template based on the conversation content. Template
 Summarize findings from investigating library specifications, language specifications, API behavior, etc.
 
 ```markdown
-# [トピック名]
+# [Topic Name]
 
-> [1〜2文の概要]
+> [1-2 sentence summary]
 
-## 要点
+## Key Points
 
-- ポイント1
-- ポイント2
+- Point 1
+- Point 2
 
 ## Q&A
 
-- Q: 疑問の内容
-  A: 調査で得られた答え
+- Q: The question
+  A: The answer from investigation
 
-- Q: 別の疑問
-  A: 答え
+- Q: Another question
+  A: Answer
 
-## 参考
+## References
 
-- URL やドキュメントへのリンク
+- Links to URLs or documentation
 ```
 
 ### Troubleshooting
@@ -66,25 +66,25 @@ Summarize findings from investigating library specifications, language specifica
 Record problems encountered and the process of resolving them.
 
 ```markdown
-# [トピック名]
+# [Topic Name]
 
-> [1〜2文の概要]
+> [1-2 sentence summary]
 
-## 症状
+## Symptoms
 
-何が起きたか
+What happened
 
-## 原因
+## Root Cause
 
-なぜ起きたか
+Why it happened
 
-## 解決策
+## Solution
 
-どう解決したか（コード例があれば含める）
+How it was resolved (include code examples if applicable)
 
-## 学び
+## Lessons Learned
 
-この経験から得た教訓
+Key takeaways from this experience
 ```
 
 ### Design Decision
@@ -92,26 +92,26 @@ Record problems encountered and the process of resolving them.
 Record technology selections, architectural decisions, and their rationale.
 
 ```markdown
-# [トピック名]
+# [Topic Name]
 
-> [1〜2文の概要]
+> [1-2 sentence summary]
 
-## 背景
+## Context
 
-何を解決したかったか
+What problem needed to be solved
 
-## 選択肢
+## Options
 
-- 案A: 概要、メリット、デメリット
-- 案B: 概要、メリット、デメリット
+- Option A: Summary, pros, cons
+- Option B: Summary, pros, cons
 
-## 判断
+## Decision
 
-どれを選んだか、なぜか
+Which option was chosen and why
 
-## 補足
+## Notes
 
-制約条件、今後の懸念など
+Constraints, future concerns, etc.
 ```
 
 ### Learning / TIL
@@ -119,15 +119,15 @@ Record technology selections, architectural decisions, and their rationale.
 Quickly record short insights or things learned today.
 
 ```markdown
-# [トピック名]
+# [Topic Name]
 
-> [1〜2文の概要]
+> [1-2 sentence summary]
 
-## 要点
+## Key Points
 
-- ポイント1
-- ポイント2
-- ポイント3
+- Point 1
+- Point 2
+- Point 3
 ```
 
 ## Formatting

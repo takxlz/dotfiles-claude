@@ -93,7 +93,6 @@ describe("Semantic Search", () => {
 ```bash
 npm test                  # TypeScript/JS
 pytest                    # Python
-mvn test                  # Java
 cargo test                # Rust
 # Tests should fail - we haven't implemented yet
 ```
@@ -114,7 +113,6 @@ export async function searchMarkets(query: string) {
 ```bash
 npm test       # TypeScript/JS
 pytest         # Python
-mvn test       # Java
 cargo test     # Rust
 # Tests should now pass
 ```
@@ -133,19 +131,17 @@ Improve code quality while keeping tests green:
 ```bash
 npm run test:coverage                              # TypeScript/JS
 pytest --cov=src --cov-report=term-missing         # Python
-mvn test jacoco:report                             # Java
 cargo tarpaulin                                    # Rust
 # Verify 80%+ coverage achieved
 ```
 
 ## Test Frameworks by Language
 
-| Language      | Unit / Integration    | Mocking                    | E2E                  |
-| ------------- | --------------------- | -------------------------- | -------------------- |
-| TypeScript/JS | Jest, Vitest          | jest.fn / vi.fn            | Playwright           |
-| Python        | pytest, unittest      | unittest.mock, pytest-mock | Playwright           |
-| Java          | JUnit 5               | Mockito                    | Playwright, Selenium |
-| Rust          | cargo test (built-in) | mockall                    | —                    |
+| Language      | Unit / Integration    | Mocking                    | E2E        |
+| ------------- | --------------------- | -------------------------- | ---------- |
+| TypeScript/JS | Jest, Vitest          | jest.fn / vi.fn            | Playwright |
+| Python        | pytest, unittest      | unittest.mock, pytest-mock | Playwright |
+| Rust          | cargo test (built-in) | mockall                    | —          |
 
 ### Test File Naming Conventions
 
@@ -153,7 +149,6 @@ cargo tarpaulin                                    # Rust
 | ------------- | ------------------------------------------------------ | --------------------------- |
 | TypeScript/JS | `*.test.ts`, `*.spec.ts`                               | `Button.test.tsx`           |
 | Python        | `test_*.py`, `*_test.py`                               | `test_search.py`            |
-| Java          | `*Test.java`                                           | `MarketServiceTest.java`    |
 | Rust          | `mod tests` in same file, `tests/` dir for integration | `tests/integration_test.rs` |
 
 ### Coverage Commands
@@ -162,7 +157,6 @@ cargo tarpaulin                                    # Rust
 | ------------- | -------------------------------------------- |
 | TypeScript/JS | `npm run test:coverage` (Jest/Vitest)        |
 | Python        | `pytest --cov=src --cov-report=term-missing` |
-| Java          | `mvn test jacoco:report`                     |
 | Rust          | `cargo tarpaulin` or `cargo llvm-cov`        |
 
 ## Testing Patterns
@@ -357,7 +351,6 @@ jest.mock("@/lib/openai", () => ({
 ```bash
 npm run test:coverage                              # TypeScript/JS
 pytest --cov=src --cov-report=term-missing         # Python
-mvn test jacoco:report                             # Java
 cargo tarpaulin --out Html                         # Rust
 ```
 
@@ -443,7 +436,6 @@ test("updates user", () => {
 ```bash
 npm test -- --watch            # TypeScript/JS (Jest/Vitest)
 pytest-watch                   # Python
-mvn fizzed-watcher:run         # Java (with watcher plugin)
 cargo watch -x test            # Rust
 ```
 

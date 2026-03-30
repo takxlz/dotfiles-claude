@@ -8,7 +8,6 @@ origin: ECC
 
 Backend architecture patterns and best practices for scalable server-side applications. Examples use **TypeScript/Node.js**. For language-specific backend patterns, see:
 
-- **Java/Spring Boot**: skill `java-patterns`
 - **Python**: skill `python-patterns`
 - **Rust**: skill `rust-patterns`
 

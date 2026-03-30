@@ -47,7 +47,6 @@ if (!apiKey) {
 | ------------- | ---------------------------------------- | ---------------------------------- |
 | TypeScript/JS | `process.env.VAR`                        | `process.env.OPENAI_API_KEY`       |
 | Python        | `os.environ["VAR"]` / `os.getenv("VAR")` | `os.environ["OPENAI_API_KEY"]`     |
-| Java          | `System.getenv("VAR")`                   | `System.getenv("OPENAI_API_KEY")`  |
 | Rust          | `std::env::var("VAR")`                   | `std::env::var("OPENAI_API_KEY")?` |
 
 #### Verification Steps
@@ -62,12 +61,11 @@ if (!apiKey) {
 
 #### Validation Libraries by Language
 
-| Language      | Library                   | Example                                   |
-| ------------- | ------------------------- | ----------------------------------------- |
-| TypeScript/JS | Zod                       | `z.object({ email: z.string().email() })` |
-| Python        | Pydantic                  | `class User(BaseModel): email: EmailStr`  |
-| Java          | Bean Validation (JSR 380) | `@Valid @NotBlank String email`           |
-| Rust          | validator crate           | `#[validate(email)] email: String`        |
+| Language      | Library         | Example                                   |
+| ------------- | --------------- | ----------------------------------------- |
+| TypeScript/JS | Zod             | `z.object({ email: z.string().email() })` |
+| Python        | Pydantic        | `class User(BaseModel): email: EmailStr`  |
+| Rust          | validator crate | `#[validate(email)] email: String`        |
 
 #### Always Validate User Input
 
@@ -379,12 +377,11 @@ catch (error) {
 
 #### Security Audit Tools by Language
 
-| Language      | Audit                                  | Lock File                         |
-| ------------- | -------------------------------------- | --------------------------------- |
-| TypeScript/JS | `npm audit`, `eslint-plugin-security`  | `package-lock.json`               |
-| Python        | `pip-audit`, `bandit`, `safety`        | `poetry.lock`, `requirements.txt` |
-| Java          | `mvn dependency-check:check`, SpotBugs | `pom.xml` (managed deps)          |
-| Rust          | `cargo audit`, `cargo-deny`            | `Cargo.lock`                      |
+| Language      | Audit                                 | Lock File                         |
+| ------------- | ------------------------------------- | --------------------------------- |
+| TypeScript/JS | `npm audit`, `eslint-plugin-security` | `package-lock.json`               |
+| Python        | `pip-audit`, `bandit`, `safety`       | `poetry.lock`, `requirements.txt` |
+| Rust          | `cargo audit`, `cargo-deny`           | `Cargo.lock`                      |
 
 #### Regular Updates (TypeScript/JS)
 

@@ -4,17 +4,41 @@
 
 Always respond in Japanese. Write code comments in Japanese. Use English for variable names, function names, and commit messages.
 
+## Confirmation Before Action
+
+A question or request for clarification is never approval. When you propose an action, present options, or ask for confirmation, do not proceed until the user gives an explicit go-ahead. Examples of responses that are NOT approval:
+
+- "What does that mean?" / "How would that work?"
+- "Tell me about option A" / "What are the pros and cons?"
+- "Which files would be affected?"
+
+Wait for a clear directive such as "Do it", "Go ahead", "Yes", or "A please" before making changes.
+
 ## Agent Orchestration
 
 ### When to Use Subagents
 
 Use subagents only for tasks that benefit from a separate context:
 
-- Complex feature planning → `planner`
-- System design or architectural decisions → `architect`
+- Implementation planning → `planner`
+- Architecture decisions → `architect`
 - After writing or modifying code → `code-reviewer` (fresh context eliminates self-review bias)
 - Build or type errors (iterative fix loop) → `build-error-resolver`
 - Security-sensitive code (auth, input handling, API endpoints, secrets) → `security-reviewer`
+
+### planner vs architect の選択基準
+
+依頼の性質に応じて選択する：
+
+| 問いの種類           | エージェント | 例                                   |
+| -------------------- | ------------ | ------------------------------------ |
+| 「〜すべきか？」     | architect    | 技術選定、移行判断、構成比較         |
+| 「〜の影響は？」     | architect    | 設計変更の波及範囲、トレードオフ分析 |
+| 「〜を実装して」     | planner      | 機能追加、バグ修正、リファクタリング |
+| 「〜の手順を作って」 | planner      | 実装計画、フェーズ分割               |
+
+両方の性質を含む場合（例: 新規機能で技術選定が必要）：
+architect → planner の順で直列実行する
 
 ### Everything Else — Do It Yourself
 

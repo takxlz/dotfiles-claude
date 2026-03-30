@@ -5,10 +5,13 @@ tools: ["Read", "Write", "Edit", "Bash", "Grep", "Glob"]
 model: opus
 skills:
   - coding-patterns
-  - python-patterns
-  - rust-patterns
-  - java-patterns
 ---
+
+対象言語に応じて、対応するスキルを読んでからエラー修正を開始すること：
+
+- TypeScript/JS → see skill: `typescript-patterns` (~/.claude/skills/typescript-patterns/SKILL.md)
+- Python → see skill: `python-patterns` (~/.claude/skills/python-patterns/SKILL.md)
+- Rust → see skill: `rust-patterns` (~/.claude/skills/rust-patterns/SKILL.md)
 
 # Build Error Resolver
 
@@ -44,18 +47,6 @@ cargo clippy -- -D warnings 2>&1
 cargo fmt --check 2>&1
 cargo tree --duplicates 2>&1
 if command -v cargo-audit >/dev/null; then cargo audit; else echo "cargo-audit not installed"; fi
-```
-
-### Java
-
-```bash
-./mvnw compile -q 2>&1 || mvn compile -q 2>&1
-./mvnw test -q 2>&1 || mvn test -q 2>&1
-./gradlew build 2>&1
-./mvnw dependency:tree 2>&1 | head -100
-./gradlew dependencies --configuration runtimeClasspath 2>&1 | head -100
-./mvnw checkstyle:check 2>&1 || echo "checkstyle not configured"
-./mvnw spotbugs:check 2>&1 || echo "spotbugs not configured"
 ```
 
 ### Python
@@ -113,23 +104,6 @@ For each error:
 | `async fn is not Send`              | Non-Send type held across `.await` | Restructure to drop non-Send values before `.await`                |
 | `the trait bound is not satisfied`  | Missing generic constraint         | Add trait bound to generic parameter                               |
 | `no method named X`                 | Missing trait import               | Add `use Trait;` import                                            |
-
-### Java
-
-| Error                                                            | Cause                                    | Fix                                                    |
-| ---------------------------------------------------------------- | ---------------------------------------- | ------------------------------------------------------ |
-| `cannot find symbol`                                             | Missing import, typo, missing dependency | Add import or dependency                               |
-| `incompatible types: X cannot be converted to Y`                 | Wrong type, missing cast                 | Add explicit cast or fix type                          |
-| `method X in class Y cannot be applied to given types`           | Wrong argument types or count            | Fix arguments or check overloads                       |
-| `variable X might not have been initialized`                     | Uninitialized local variable             | Initialise variable before use                         |
-| `non-static method X cannot be referenced from a static context` | Instance method called statically        | Create instance or make method static                  |
-| `reached end of file while parsing`                              | Missing closing brace                    | Add missing `}`                                        |
-| `package X does not exist`                                       | Missing dependency or wrong import       | Add dependency to `pom.xml`/`build.gradle`             |
-| `error: cannot access X, class file not found`                   | Missing transitive dependency            | Add explicit dependency                                |
-| `Annotation processor threw uncaught exception`                  | Lombok/MapStruct misconfiguration        | Check annotation processor setup                       |
-| `Could not resolve: group:artifact:version`                      | Missing repository or wrong version      | Add repository or fix version in POM                   |
-| `The following artifacts could not be resolved`                  | Private repo or network issue            | Check repository credentials or `settings.xml`         |
-| `COMPILATION ERROR: Source option X is no longer supported`      | Java version mismatch                    | Update `maven.compiler.source` / `targetCompatibility` |
 
 ### Python
 
@@ -198,67 +172,6 @@ grep "rust-version" Cargo.toml
 # In Cargo.toml: edition = "2024"  # Requires rustc 1.85+
 ```
 
-### Java — Maven
-
-```bash
-# Check dependency tree for conflicts
-./mvnw dependency:tree -Dverbose
-
-# Force update snapshots and re-download
-./mvnw clean install -U
-
-# Analyse dependency conflicts
-./mvnw dependency:analyze
-
-# Check effective POM (resolved inheritance)
-./mvnw help:effective-pom
-
-# Debug annotation processors
-./mvnw compile -X 2>&1 | grep -i "processor\|lombok\|mapstruct"
-
-# Skip tests to isolate compile errors
-./mvnw compile -DskipTests
-
-# Check Java version in use
-./mvnw --version
-java -version
-```
-
-### Java — Gradle
-
-```bash
-# Check dependency tree for conflicts
-./gradlew dependencies --configuration runtimeClasspath
-
-# Force refresh dependencies
-./gradlew build --refresh-dependencies
-
-# Clear Gradle build cache
-./gradlew clean && rm -rf .gradle/build-cache/
-
-# Run with debug output
-./gradlew build --debug 2>&1 | tail -50
-
-# Check dependency insight
-./gradlew dependencyInsight --dependency <name> --configuration runtimeClasspath
-
-# Check Java toolchain
-./gradlew -q javaToolchains
-```
-
-### Java — Spring Boot
-
-```bash
-# Verify Spring Boot application context loads
-./mvnw spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=test"
-
-# Check for missing beans or circular dependencies
-./mvnw test -Dtest=*ContextLoads* -q
-
-# Verify Lombok is configured as annotation processor (not just dependency)
-grep -A5 "annotationProcessorPaths\|annotationProcessor" pom.xml build.gradle
-```
-
 ## Quick Recovery
 
 ### TypeScript/JavaScript
@@ -273,12 +186,6 @@ npx eslint . --fix
 
 ```bash
 cargo clean && cargo build
-```
-
-### Java
-
-```bash
-mvn clean compile    # or: gradle clean build
 ```
 
 ### Python
@@ -313,7 +220,7 @@ pip install -e .
 - **Surgical fixes only** — don't refactor, just fix the error
 - Fix root cause over suppressing symptoms
 - Prefer the simplest fix that preserves the original intent
-- **Never** add `#[allow(unused)]` or `@SuppressWarnings` without explicit approval
+- **Never** add `#[allow(unused)]` without explicit approval
 - **Never** use `unsafe` to work around borrow checker errors
 - **Never** add `.unwrap()` to silence type errors — propagate with `?`
 - **Always** run the build command after each fix to verify

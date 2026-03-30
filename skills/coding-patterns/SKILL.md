@@ -11,7 +11,6 @@ Language-agnostic coding principles applicable across all projects. For language
 - **TypeScript/JavaScript/React**: skill `typescript-patterns`
 - **Python**: skill `python-patterns`
 - **Rust**: skill `rust-patterns`
-- **Java/Spring Boot**: skill `java-patterns`
 
 ## When to Activate
 

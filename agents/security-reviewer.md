@@ -36,13 +36,6 @@ cargo audit
 cargo deny check advisories
 ```
 
-### Java
-
-```bash
-mvn org.owasp:dependency-check-maven:check
-mvn spotbugs:check
-```
-
 ### Python
 
 ```bash

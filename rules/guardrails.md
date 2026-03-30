@@ -1,3 +1,7 @@
+---
+description: "Project-wide guardrails: Conventional Commits, TDD, code review policy, code style, and architecture constraints"
+---
+
 # Guardrails
 
 ## Commit Workflow

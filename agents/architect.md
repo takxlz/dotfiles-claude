@@ -241,13 +241,4 @@ Example architecture for an AI-powered SaaS platform:
 - **1M users**: Microservices architecture, separate read/write databases
 - **10M users**: Event-driven architecture, distributed caching, multi-region
 
-### Alternative Architecture Example
-
-- **Frontend**: React (Vite)
-- **Backend**: Spring Boot (Java 17+) or Actix-web (Rust)
-- **Database**: PostgreSQL
-- **Cache**: Redis
-- **Build**: Maven/Gradle or Cargo
-- **CI/CD**: GitHub Actions
-
 **Remember**: Good architecture enables rapid development, easy maintenance, and confident scaling. The best architecture is simple, clear, and follows established patterns.
