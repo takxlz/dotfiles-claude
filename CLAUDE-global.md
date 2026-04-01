@@ -1,76 +1,42 @@
-# Global Instructions
+# グローバル指示
 
-## Response Language
+## 応答言語
 
-Always respond in Japanese. Write code comments in Japanese. Use English for variable names, function names, and commit messages.
+日本語で応答する。コード内のコメントも日本語で書く。
+変数名・関数名・コミットメッセージは英語を使用する。
 
-## Confirmation Before Action
+## 確認なしに実行しない
 
-A question or request for clarification is never approval. When you propose an action, present options, or ask for confirmation, do not proceed until the user gives an explicit go-ahead. Examples of responses that are NOT approval:
+質問や確認の問い合わせは承認ではない。
+アクションの提案・選択肢の提示・確認を行った場合、ユーザーが明示的に許可するまで実行しないこと。
 
-- "What does that mean?" / "How would that work?"
-- "Tell me about option A" / "What are the pros and cons?"
-- "Which files would be affected?"
+承認**ではない**応答の例：
 
-Wait for a clear directive such as "Do it", "Go ahead", "Yes", or "A please" before making changes.
+- 「それはどういう意味？」「どう動くの？」
+- 「選択肢Aについて教えて」「メリット・デメリットは？」
+- 「どのファイルが影響する？」
 
-## Agent Orchestration
+「やって」「お願いします」「yes」等の明確な指示があるまで待つこと。
 
-### When to Use Subagents
+## エラー修正時のスコープ制約
 
-Use subagents only for tasks that benefit from a separate context:
+ビルドエラーや型エラーの修正時は、エラーの解消に必要な最小限の変更のみ行う。
 
-- Implementation planning → `planner`
-- Architecture decisions → `architect`
-- After writing or modifying code → `code-reviewer` (fresh context eliminates self-review bias)
-- Build or type errors (iterative fix loop) → `build-error-resolver`
-- Security-sensitive code (auth, input handling, API endpoints, secrets) → `security-reviewer`
+- リファクタリングしない
+- アーキテクチャを変更しない
+- 周辺コードを「ついでに」整理しない
+- 警告の抑制やエラーの握りつぶしでごまかさない
 
-### planner vs architect の選択基準
+根本原因を特定し、最もシンプルな修正を選ぶこと。
 
-依頼の性質に応じて選択する：
+## コード変更時のドキュメント更新
 
-| 問いの種類           | エージェント | 例                                   |
-| -------------------- | ------------ | ------------------------------------ |
-| 「〜すべきか？」     | architect    | 技術選定、移行判断、構成比較         |
-| 「〜の影響は？」     | architect    | 設計変更の波及範囲、トレードオフ分析 |
-| 「〜を実装して」     | planner      | 機能追加、バグ修正、リファクタリング |
-| 「〜の手順を作って」 | planner      | 実装計画、フェーズ分割               |
+コードを変更したら、関連するドキュメントも更新する：
 
-両方の性質を含む場合（例: 新規機能で技術選定が必要）：
-architect → planner の順で直列実行する
+- README.md（使い方、セットアップ手順、設定例）
+- CLAUDE.md（プロジェクト構成、コマンド、アーキテクチャ説明）
+- APIドキュメント（エンドポイント、パラメータ、レスポンス）
+- コメント・docコメント（関数シグネチャ、動作変更）
+- CHANGELOG.md（存在する場合）
 
-### Everything Else — Do It Yourself
-
-The main agent handles these directly, using rules (auto-applied) and skills (on-demand):
-
-- **Test-driven development** — Write tests before implementation. Use `tdd-workflow` skill for detailed patterns.
-- **Documentation updates** — Update README.md, CLAUDE.md, API docs, comments, and CHANGELOG.md when code changes.
-- **Refactoring** — Identify and remove dead code, consolidate duplicates.
-- **Database work** — Use `postgres-patterns` and `database-migrations` skills.
-- **Documentation lookup** — Use WebSearch / WebFetch directly.
-
-### Security Escalation
-
-When you find a CRITICAL security issue (hardcoded secrets, injection vulnerabilities, auth bypass):
-
-1. Flag the issue immediately
-2. Invoke `security-reviewer` for a comprehensive audit
-3. `security-reviewer` findings take precedence on security matters
-
-### Execution Policy
-
-- Run independent subagents in parallel
-- Run dependent subagents sequentially
-
-## Documentation Updates on Code Changes
-
-When code is changed, always update related documentation:
-
-- README.md (usage, setup instructions, configuration examples)
-- CLAUDE.md (project structure, commands, architecture descriptions)
-- API documentation (endpoints, parameters, responses)
-- Comments and doc comments (function signatures, behavior changes)
-- CHANGELOG.md (if it exists)
-
-Verify consistency between changes and documentation before completing work.
+作業完了前に、変更内容とドキュメントの整合性を確認すること。

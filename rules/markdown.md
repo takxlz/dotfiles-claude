@@ -1,20 +1,16 @@
 ---
-description: "Markdown formatting rules for raw text readability"
+description: "Markdown の書式ルール（rawテキストの可読性重視）"
 globs: ["**/*.md"]
 ---
 
-# Markdown Style
+# Markdown 書式
 
-## Table Formatting
+## テーブル
 
-- Align `|` columns with padding so that raw text is readable without rendering
-- Do NOT use minimal separators like `|---|---|`
+- `|` の列をパディングで揃え、レンダリングなしでも読めるようにする
+- 日本語と英語が混在する場合も列を揃える。日本語は1文字が全角幅（2カラム）であることを考慮してパディングを調整する
+- 最小セパレータ（`|---|---|`）は使わない
 
-## Heading Levels
+## 行の長さ
 
-- Use `#` and `##` as primary heading levels; use `###` sparingly
-- Avoid deeply nested headings (`####` or beyond)
-
-## Line Length
-
-- Keep line length reasonable for raw text readability
+- rawテキストでの可読性を考慮した行長にする

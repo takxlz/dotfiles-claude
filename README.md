@@ -1,22 +1,7 @@
 # dotfiles-claude
 
-Claude Code の設定ファイル（スキル、エージェント、ルール、フック等）を管理するリポジトリ。
-
-## 構成
-
-```
-.
-├── CLAUDE.md            # このリポジトリ用の設定
-├── CLAUDE-global.md     # 全プロジェクト共通の指示 → ~/.claude/CLAUDE.md
-├── settings.json        # グローバル設定（hooks 含む） → ~/.claude/settings.json
-├── agents/              # カスタムエージェント（5個） → ~/.claude/agents/
-├── skills/              # カスタムスキル（14個） → ~/.claude/skills/
-├── rules/               # カスタムルール（5個） → ~/.claude/rules/
-├── hooks/               # hook スクリプト（6個） → ~/.claude/hooks/
-├── setup.sh             # セットアップ（macOS / Linux）
-├── setup.bat            # セットアップ（Windows）
-└── .gitignore
-```
+Claude Code の設定ファイル（スキル、ルール、フック等）を管理するリポジトリ。
+`setup.sh` を実行すると `~/.claude/` 配下にシンボリックリンクが作成され、すべての Claude Code プロジェクトに反映される。
 
 ## セットアップ
 
@@ -35,110 +20,116 @@ chmod +x setup.sh
 setup.bat
 ```
 
-`~/.claude/` 配下にシンボリックリンクを作成する。既存ファイルは `.bak.*` としてバックアップされる。
+既存ファイルは `.bak.*` としてバックアップされる。
+Windows ではシンボリックリンク作成に管理者権限または開発者モードが必要。
 
-## 設計方針
-
-メインエージェント（Opus）が実装・テスト・ドキュメントを直接担当する。サブエージェントは「別コンテキストで深く考える」「自己レビューバイアスを排除する」「反復ループを隔離する」「専門チェックリストで網羅性を担保する」場合にのみ使用する。
-
-### ルール・スキル・エージェントの関係
+## ディレクトリ構成
 
 ```
-メインエージェント（Opus）
-├── ルール … ファイル操作時に自動注入（確実）
-├── スキル … 必要時にロード（モデル判断 or /skill-name）
-└── サブエージェント … 別コンテキストで起動
-     ├── スキル … frontmatter の skills: で明示指定したもののみ
-     ├── body  … エージェント定義の本文
-     └── ルール/CLAUDE.md … ❌ 渡されない
+.
+├── CLAUDE.md            # このリポジトリ用の指示
+├── CLAUDE-global.md     # 全プロジェクト共通の指示 → ~/.claude/CLAUDE.md
+├── settings.json        # グローバル設定（hooks 含む） → ~/.claude/settings.json
+├── skills/              # カスタムスキル → ~/.claude/skills/
+├── agents/              # カスタムエージェント → ~/.claude/agents/
+├── rules/               # カスタムルール → ~/.claude/rules/
+├── hooks/               # hook スクリプト → ~/.claude/hooks/
+├── tmp/                 # 刷新前の旧定義（参考用）
+├── setup.sh             # セットアップ（macOS / Linux）
+├── setup.bat            # セットアップ（Windows）
+└── .gitignore
 ```
 
-| 項目                       | ルール                   | スキル                         | エージェント                   |
-| -------------------------- | ------------------------ | ------------------------------ | ------------------------------ |
-| ロードタイミング           | ファイル操作時に自動注入 | モデル判断 or `/skill-name`    | メインが Agent ツールで起動    |
-| メインでの可視性           | 常に参照可能             | モデル判断に依存               | —                              |
-| サブエージェントでの可視性 | 参照不可                 | `skills:` に明示したもののみ   | —                              |
-| 適切なコンテンツ量         | 短いルール（20〜60行）   | 詳細なパターン集（100〜800行） | 別コンテキストが必要なタスク   |
-| 役割                       | 「何を守るか」を強制     | 「どう実装するか」を提供       | バイアス排除・コンテキスト隔離 |
+## グローバル指示（CLAUDE-global.md）
 
-## 含まれるもの
+全プロジェクトに適用される共通ルール:
 
-### エージェント（5個）
+- **応答言語** — 日本語で応答。変数名・関数名・コミットメッセージは英語
+- **確認なしに実行しない** — 質問や選択肢への問い合わせは承認ではない。明示的な許可があるまで待つ
+- **エラー修正時のスコープ制約** — 最小限の修正のみ。リファクタリング・アーキテクチャ変更・「ついで」の整理は行わない
+- **コード変更時のドキュメント更新** — README、CLAUDE.md、APIドキュメント、コメント等を変更に合わせて更新する
 
-| エージェント           | モデル | 用途                                                              |
-| ---------------------- | ------ | ----------------------------------------------------------------- |
-| `planner`              | Opus   | 複雑な機能やリファクタリングの実装計画を策定                      |
-| `architect`            | Opus   | システム設計・スケーラビリティ・技術的意思決定                    |
-| `code-reviewer`        | Opus   | コード変更後のレビュー（別コンテキストでバイアスを排除）          |
-| `build-error-resolver` | Opus   | 全言語のビルド/型エラーを最小限の差分で修正（借用チェッカー含む） |
-| `security-reviewer`    | Opus   | OWASP Top 10・秘密情報・認証の脆弱性を検出・監査                  |
+## スキル
 
-### スキル（14個）
+### triage-errors — エラートリアージ
 
-#### 開発プロセス
+指定された機能IDをもとに、Java アプリケーションのログから該当するスタックトレースを取得する。
 
-- **coding-patterns** — 言語非依存の汎用原則（KISS / DRY / YAGNI）
-- **tdd-workflow** — TDD の Red→Green→Refactor、モッキングパターン、フレームワーク別例
-- **security-review** — 15項目のセキュリティチェックリスト、SQLi/XSS/CSRF 防止パターン
+- ユーザーからログディレクトリ・AP種別・機能IDを受け取る
+- ERROR レベルのエントリからスタックトレースを完全に抽出（`Caused by` チェーン含む）
+- 結果は `./triage-output/errors-YYYYMMDD-HHMMSS.md` にファイル出力
+- AP種別とファイル名パターンの対応は `config.local.md`（gitignore 対象）に記載
 
-#### API・バックエンド・フロントエンド
+初回セットアップ:
 
-- **api-design** — REST API 設計パターン（リソース命名・ページネーション・バージョニング）
-- **backend-patterns** — リポジトリパターン・サービス層・N+1 防止・キャッシュ（Node.js）
-- **frontend-patterns** — React コンポーネント設計・カスタムフック・状態管理・パフォーマンス
+```bash
+cd skills/triage-errors
+cp config.example.md config.local.md
+# config.local.md を自社環境に合わせて編集
+```
 
-#### データベース
+### review-code — コードレビュー
 
-- **postgres-patterns** — PostgreSQL インデックス設計・RLS・カーソルページネーション
-- **database-migrations** — ゼロダウンタイムスキーマ変更（Prisma / Drizzle / Django 等）
+コード変更を品質・セキュリティ・保守性の観点でレビューする。
 
-#### 言語別パターン
+- `context: fork` により別コンテキストで実行し、実装時のバイアスを排除
+- `allowed-tools` で読み取り専用ツールに制限（変更は行わない）
+- 確信度80%以上の指摘のみ報告
+- 重要度順に優先: CRITICAL（セキュリティ、データ損失）→ HIGH（バグ）→ MEDIUM（品質）→ LOW（スタイル）
 
-- **typescript-patterns** — TS/JS の型安全性・非同期・React コンポーネント・Zod 入力検証
-- **python-patterns** — EAFP 原則・型ヒント・データクラス・並行処理パターン
-- **python-testing** — pytest フィクスチャ・パラメトライズ・非同期テスト・カバレッジ 80%+
-- **rust-patterns** — 所有権・借用・エラー処理（thiserror / anyhow）・並行処理
-- **rust-testing** — cargo test・proptest・mockall・Criterion ベンチマーク
+### note — ナレッジノート生成
 
-#### ユーティリティ
+会話中に得た知見をmarkdownファイルとして保存する。
 
-- **note** — 会話の知見をマークダウンに出力（`/note` で起動）
+- `/note` または「メモして」「まとめて」等で起動
+- カテゴリ別テンプレート: 技術調査 / トラブルシューティング / 設計判断 / 学び
+- 出力先: `./note/`（作業ディレクトリ直下）
+- 既存ファイルとの重複チェック・追記にも対応
 
-### ルール（5個）
+### find-skills — スキル検索
 
-- **guardrails**（常時適用）
-  - Conventional Commits 形式、TDD（テストファースト）、コードレビュー方針
-  - 既存のモジュール構成を維持、camelCase ファイル命名
-- **typescript**（`**/*.ts,tsx,js,jsx`）
-  - スプレッド演算子による不変更新、Zod 入力検証、console.log 禁止
-  - Jest / Vitest、`*.test.ts` / `*.spec.ts`、E2E は Playwright
-- **python**（`**/*.py,pyi`）
-  - PEP 8、型アノテーション、frozen dataclass / NamedTuple
-  - pytest、`pytest.mark` でカテゴリ分け
-- **rust**（`**/*.rs`）
-  - `?` 演算子、借用優先、`unsafe` 最小限 + `// SAFETY:`
-  - cargo test、`#[cfg(test)]`、`tests/` で統合テスト
-- **markdown**（`**/*.md`）
-  - テーブル `|` 整形、最小セパレータ禁止
+`npx skills` CLI を使ってスキルの検索・インストールを支援する。
 
-### Hooks（6スクリプト + 1インライン）
+## ルール
 
-#### PreToolUse（ツール実行前）
+### markdown（`**/*.md`）
 
-- **block-no-verify**（Bash）— `--no-verify` をブロック
-- **block-destructive-git**（Bash）— `push --force` / `reset --hard` 等をブロック（`--force-with-lease` は許可）
-- **check-conventional-commit**（Bash）— コミットメッセージの Conventional Commits 形式を検証
-- **block-large-file**（Write）— 800行超のファイル作成をブロック
+Markdown ファイル編集時に自動適用される書式ルール:
 
-#### PostToolUse（ツール実行後）
+- テーブルの `|` 列をパディングで揃える（日本語全角幅を考慮）
+- 最小セパレータ（`|---|---|`）は使わない
+- 見出しは `#` と `##` を主に使い、`####` 以降は使わない
 
-- **warn-console-log**（Edit）— `console.log` 追加を警告
-- **auto-format**（Edit）— prettier / ruff / rustfmt で自動フォーマット
+## Hooks
 
-#### Stop（応答完了時）
+`settings.json` 内で定義。スクリプト本体は `hooks/` に配置。
 
-- **デスクトップ通知**（インライン）— macOS 通知で完了を知らせる
+### PreToolUse（ツール実行前）
 
-## License
+| hook                           | 対象  | 動作                                                         |
+| ------------------------------ | ----- | ------------------------------------------------------------ |
+| `block-no-verify.js`           | Bash  | `--no-verify` を含むコマンドをブロック                       |
+| `block-destructive-git.js`     | Bash  | `push --force` / `reset --hard` 等の破壊的コマンドをブロック |
+| `check-conventional-commit.js` | Bash  | コミットメッセージの Conventional Commits 形式を検証         |
+| `block-large-file.js`          | Write | 800行超のファイル作成をブロック                              |
 
-This repository includes agents, skills, and rules from [everything-claude-code](https://github.com/affaan-m/everything-claude-code) by Affaan Mustafa, licensed under the [MIT License](https://github.com/affaan-m/everything-claude-code/blob/main/LICENSE).
+### PostToolUse（ツール実行後）
+
+| hook                  | 対象 | 動作                                         |
+| --------------------- | ---- | -------------------------------------------- |
+| `warn-console-log.js` | Edit | `console.log` の追加を警告                   |
+| `auto-format.js`      | Edit | prettier / ruff / rustfmt で自動フォーマット |
+
+### Stop（応答完了時）
+
+| hook             | 動作                                         |
+| ---------------- | -------------------------------------------- |
+| デスクトップ通知 | macOS 通知で完了を知らせる（インライン定義） |
+
+## ローカル設定
+
+以下のファイルは gitignore されており、環境ごとにローカルで作成する:
+
+- `*.local.md` — スキルのローカル設定（機密情報を含む）
+- `settings.local.json` — Claude Code のローカル設定オーバーライド
+

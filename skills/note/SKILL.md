@@ -1,148 +1,145 @@
 ---
 name: note
-description: A skill that outputs knowledge and insights gained during a conversation as a markdown file. Use when the user types "/note", or requests knowledge recording such as "summarize", "make a note", or "record learnings". Structures and records technical key points discussed in the conversation, questions the user had, and issues encountered along with their solutions.
+description: 会話中に得た知見やナレッジをmarkdownファイルとして保存する。「/note」や「メモして」「まとめて」「記録して」等の指示で使用する。
 ---
 
-# Knowledge Note Generation Skill
+# ナレッジノート生成
 
-Save knowledge gained from conversations as markdown files in the `note/` directory under the working directory.
+会話で得た知見を作業ディレクトリの `note/` にmarkdownファイルとして保存する。
 
-## Procedure
+## 手順
 
-1. Review the conversation content and identify topics worth recording
-2. Determine the category for each topic (technical research / troubleshooting / design decision / learning)
-3. If a conversation has multiple topics that would be referenced independently, split them into separate files. If they are closely related, combine them into one file
-4. Run `ls ./note/` to check existing files (create the directory with `mkdir -p ./note/` if it doesn't exist)
-5. If an existing file matches the topic, ask the user: "Append to `[filename]` or create a new file?"
-6. Based on the template, adjust the structure to fit the content, then create and save the markdown file
-7. Tell the user the full path of the saved file. Suggest moving it to a subdirectory based on the topic's technical domain (e.g., `./note/Rust/`)
+1. 会話内容を振り返り、記録すべきトピックを特定する
+2. カテゴリを判定する（技術調査 / トラブルシューティング / 設計判断 / 学び）
+3. 独立して参照されるトピックが複数ある場合はファイルを分割する。密接に関連していれば1ファイルにまとめる
+4. `ls ./note/` で既存ファイルを確認する（ディレクトリがなければ `mkdir -p ./note/` で作成）
+5. 既存ファイルとトピックが一致する場合、「`[ファイル名]` に追記するか、新規作成するか？」とユーザーに確認する
+6. テンプレートをもとに内容に合わせて構成を調整し、markdownファイルを作成・保存する
+7. 保存先のフルパスをユーザーに伝える。技術ドメインに応じたサブディレクトリへの移動を提案する（例: `./note/Rust/`）
 
-## Output Destination
+## 出力先
 
-- Save location: `./note/` (directly under the working directory)
-- Create `./note/` if it does not exist
-- Do not automatically create subdirectories. Only suggest them and let the user decide
+- 保存先: `./note/`（作業ディレクトリ直下）
+- `./note/` が存在しない場合は作成する
+- サブディレクトリは自動作成しない。提案のみ行い、ユーザーに判断を委ねる
 
-## File Naming
+## ファイル命名
 
-- Use a specific topic name that can be searched for later
-- Format: `TopicName.md`
-- Good examples: `PatternLayout-StackTrace-Rendering.md`, `Rust-Lifetimes-and-NLL.md`
-- Bad examples: `Python-Notes.md` (too broad), `Investigation-Results.md` (unclear what was investigated), `2026-03-29.md` (date alone doesn't indicate the content)
+- 後から検索できる具体的なトピック名を使う
+- 形式: `トピック名.md`
+- 良い例: `PatternLayoutのスタックトレース表示.md`、`Rustのライフタイムとnon-lexical-lifetimes.md`
+- 悪い例: `Pythonメモ.md`（広すぎる）、`調査結果.md`（何を調査したか不明）、`2026-03-29.md`（日付だけでは内容がわからない）
 
-## Templates
+## テンプレート
 
-Select the most appropriate template based on the conversation content. Templates are skeletons; feel free to add, omit, or reorder sections to fit the content.
+会話内容に最も適したテンプレートを選択する。テンプレートは骨格であり、内容に合わせてセクションの追加・省略・並べ替えを行う。
 
-### Technical Research
+### 技術調査
 
-Summarize findings from investigating library specifications, language specifications, API behavior, etc.
+ライブラリ仕様・言語仕様・API動作などを調査した結果をまとめる。
 
 ```markdown
-# [Topic Name]
+# [トピック名]
 
-> [1-2 sentence summary]
+> [1〜2文の要約]
 
-## Key Points
+## ポイント
 
-- Point 1
-- Point 2
+- ポイント1
+- ポイント2
 
 ## Q&A
 
-- Q: The question
-  A: The answer from investigation
+- Q: 疑問点
+  A: 調査で得た回答
 
-- Q: Another question
-  A: Answer
+## 参考
 
-## References
-
-- Links to URLs or documentation
+- URLやドキュメントへのリンク
 ```
 
-### Troubleshooting
+### トラブルシューティング
 
-Record problems encountered and the process of resolving them.
+発生した問題と解決までの過程を記録する。
 
 ```markdown
-# [Topic Name]
+# [トピック名]
 
-> [1-2 sentence summary]
+> [1〜2文の要約]
 
-## Symptoms
+## 症状
 
-What happened
+何が起きたか
 
-## Root Cause
+## 原因
 
-Why it happened
+なぜ起きたか
 
-## Solution
+## 解決策
 
-How it was resolved (include code examples if applicable)
+どう解決したか（該当する場合はコード例を含める）
 
-## Lessons Learned
+## 教訓
 
-Key takeaways from this experience
+この経験から得た重要な学び
 ```
 
-### Design Decision
+### 設計判断
 
-Record technology selections, architectural decisions, and their rationale.
+技術選定やアーキテクチャの決定とその根拠を記録する。
 
 ```markdown
-# [Topic Name]
+# [トピック名]
 
-> [1-2 sentence summary]
+> [1〜2文の要約]
 
-## Context
+## 背景
 
-What problem needed to be solved
+どんな問題を解決する必要があったか
 
-## Options
+## 選択肢
 
-- Option A: Summary, pros, cons
-- Option B: Summary, pros, cons
+- 選択肢A: 概要、メリット、デメリット
+- 選択肢B: 概要、メリット、デメリット
 
-## Decision
+## 決定
 
-Which option was chosen and why
+どの選択肢を選び、なぜそうしたか
 
-## Notes
+## 備考
 
-Constraints, future concerns, etc.
+制約、将来的な懸念など
 ```
 
-### Learning / TIL
+### 学び / TIL
 
-Quickly record short insights or things learned today.
+短い気づきや今日学んだことを手早く記録する。
 
 ```markdown
-# [Topic Name]
+# [トピック名]
 
-> [1-2 sentence summary]
+> [1〜2文の要約]
 
-## Key Points
+## ポイント
 
-- Point 1
-- Point 2
-- Point 3
+- ポイント1
+- ポイント2
+- ポイント3
 ```
 
-## Formatting
+## フォーマット
 
-- Prioritize readability in raw markdown
-  - Use `#` and `##` as primary headings. Only use `###` and beyond when content requires deeper nesting
-  - Do not overuse bold labels (`**key**: value`). Omit them if bullet points convey the information sufficiently
-  - Prioritize conciseness over decoration
-- Output notes in Japanese
-- Faithfully reflect the conversation content. Do not add information through speculation or supplementation
-- Specify the language for code snippets (`java, `rust, etc.)
-- Place content that the user repeatedly confirmed or emphasized at the top of key points, or make it bold
+- rawのmarkdownでの可読性を優先する
+  - 見出しは `#` と `##` を主に使う。`###` 以降は内容が深い階層を必要とする場合のみ
+  - 太字ラベル（`**キー**: 値`）を多用しない。箇条書きで十分伝わるなら省略する
+  - 装飾より簡潔さを優先する
+- ノートは日本語で出力する
+- 会話内容を忠実に反映する。推測や補足で情報を追加しない
+- コードスニペットには言語を指定する（`java`、`rust` 等）
+- ユーザーが繰り返し確認・強調した内容はポイントの先頭に置くか、太字にする
 
-## Rules for Updating Existing Files
+## 既存ファイルの更新ルール
 
-- When adding new items to an existing key points list, append them at the end
-- When there is information that contradicts existing descriptions, replace the old description with the new content and add `(YYYY-MM-DD updated)` immediately after the changed section
-- Maintain the existing section structure (headings and order). If a new section is needed, add it at the end
+- 既存のポイント一覧に新しい項目を追加する場合は末尾に追記する
+- 既存の記述と矛盾する情報がある場合は、古い記述を新しい内容に置き換え、変更箇所の直後に `(YYYY-MM-DD 更新)` を付記する
+- 既存のセクション構成（見出しと順序）を維持する。新しいセクションが必要な場合は末尾に追加する
