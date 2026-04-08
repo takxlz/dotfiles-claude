@@ -76,7 +76,44 @@
         "description": "Auto-format files after edits (prettier/ruff/rustfmt)"
       }
     ],
+    "PreCompact": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ~/.claude/hooks/pre-compact.js",
+            "timeout": 10
+          }
+        ],
+        "description": "Save session state before context compaction"
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ~/.claude/hooks/session-start.js",
+            "timeout": 10
+          }
+        ],
+        "description": "Restore previous session context on startup"
+      }
+    ],
     "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ~/.claude/hooks/session-end.js",
+            "timeout": 15
+          }
+        ],
+        "description": "Auto-save session summary from transcript"
+      },
       {
         "matcher": "*",
         "hooks": [
