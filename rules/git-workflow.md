@@ -6,7 +6,8 @@ description: "ブランチ運用、コミット粒度、PR 作成手順に関す
 
 ## ブランチ
 
-- `main` に直接コミットせず、機能ブランチで作業する
+- 原則として `main` に直接コミットせず、機能ブランチで作業する
+- リポジトリ名が `dotfiles` または `dotfiles-*` の場合は `main` ブランチのみで運用してよい
 - ブランチ名: `<type>/<short-description>`（例: `feat/add-auth`, `fix/null-check`）
 
 ## コミット
