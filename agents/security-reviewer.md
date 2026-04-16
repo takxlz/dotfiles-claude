@@ -32,6 +32,7 @@ model: inherit
 ### 判定基準
 
 以下のいずれかに該当する場合にウェブアプリとみなす：
+
 - HTTP サーバーやフレームワークの使用（Express, FastAPI, Gin, Actix 等）
 - ルーティング定義（`app.get`, `@app.route`, `router.Handle` 等）
 - HTML テンプレートやフロントエンドフレームワーク（React, Vue 等）
@@ -47,17 +48,17 @@ model: inherit
 
 ## 危険パターン
 
-| パターン                         | 重要度     | 修正方針                           |
-| -------------------------------- | ---------- | ---------------------------------- |
-| 秘密情報のハードコード           | CRITICAL   | 環境変数またはシークレットマネージャ |
-| ユーザー入力を含む shell 実行    | CRITICAL   | 安全な API または execFile を使用  |
-| 文字列結合による SQL             | CRITICAL   | パラメータ化クエリ                 |
-| `innerHTML` にユーザー入力       | HIGH       | `textContent` または DOMPurify    |
-| ユーザー指定 URL への fetch      | HIGH       | 許可リストでドメインを制限         |
-| 平文パスワードの比較             | CRITICAL   | bcrypt/argon2 の compare を使用    |
-| ルートに認証チェックなし         | CRITICAL   | 認証ミドルウェアを追加             |
-| レートリミットなし               | HIGH       | レートリミットを追加               |
-| ログへのパスワード・秘密情報出力 | MEDIUM     | ログ出力をサニタイズ               |
+| パターン                         | 重要度   | 修正方針                             |
+| -------------------------------- | -------- | ------------------------------------ |
+| 秘密情報のハードコード           | CRITICAL | 環境変数またはシークレットマネージャ |
+| ユーザー入力を含む shell 実行    | CRITICAL | 安全な API または execFile を使用    |
+| 文字列結合による SQL             | CRITICAL | パラメータ化クエリ                   |
+| `innerHTML` にユーザー入力       | HIGH     | `textContent` または DOMPurify       |
+| ユーザー指定 URL への fetch      | HIGH     | 許可リストでドメインを制限           |
+| 平文パスワードの比較             | CRITICAL | bcrypt/argon2 の compare を使用      |
+| ルートに認証チェックなし         | CRITICAL | 認証ミドルウェアを追加               |
+| レートリミットなし               | HIGH     | レートリミットを追加                 |
+| ログへのパスワード・秘密情報出力 | MEDIUM   | ログ出力をサニタイズ                 |
 
 ## 偽陽性の判断基準
 
