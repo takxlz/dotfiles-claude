@@ -1,6 +1,6 @@
 ---
 name: codebase-scan
-description: 複数リポジトリ横断のキーワード抽出スキル。grep を主軸に、設計 → 並列実行 → TSV 統合の手順で該当箇所を ./output/codebase-scan/<調査名>/<YYYYMMDD-HHMM>/scan.tsv にまとめる。
+description: 複数リポジトリ横断のキーワード抽出スキル。grep を主軸に、設計 → 並列実行 → TSV 統合の手順で該当箇所を ./output/codebase-scan/<調査名>/<YYYYMMDD-HHMM>/scan-result.tsv にまとめる。
 ---
 
 # 概要
@@ -174,9 +174,9 @@ grep `-E`（ERE）前提。macOS 標準 grep は BSD 系で `\b` が使えない
 
 ```
 <プロジェクトルート>/output/codebase-scan/<調査名>/<YYYYMMDD-HHMM>/
-├── scan.tsv       # 最終統合結果
+├── scan-result.tsv      # 最終統合結果
 └── .tmp/
-    ├── scan-design.md    # 承認された調査設計（キーワード・除外・対象等）
+    ├── scan-design.md   # 承認された調査設計（キーワード・除外・対象等）
     ├── <repo1>.raw
     ├── <repo2>.raw
     └── <repo3>.raw
@@ -215,7 +215,7 @@ grep -rnIE \
 
 ## 3. 結果の統合
 
-各 `.raw` を読み込み、`./output/codebase-scan/<調査名>/<YYYYMMDD-HHMM>/scan.tsv` に統合する。
+各 `.raw` を読み込み、`./output/codebase-scan/<調査名>/<YYYYMMDD-HHMM>/scan-result.tsv` に統合する。
 
 ### 3-1. TSV 構造
 
@@ -265,7 +265,7 @@ grep 結果を評価したうえで、以下のケースに該当する場合は
 - 呼び出し関係や継承関係など「意味的な」追跡が必要
 - マッチ件数 0 だが、別名・別経路で同等機能が実装されている可能性がある
 
-結果は `./output/codebase-scan/<調査名>/<YYYYMMDD-HHMM>/notes.md` に追記する。scan.tsv 側には追加しない（TSV は grep の生データに限定する）。
+結果は `./output/codebase-scan/<調査名>/<YYYYMMDD-HHMM>/notes.md` に追記する。scan-result.tsv 側には追加しない（TSV は grep の生データに限定する）。
 
 Agent には以下を明示的に伝える:
 
@@ -277,9 +277,9 @@ Agent には以下を明示的に伝える:
 
 ## 5. 最終報告
 
-ユーザーへの報告は以下をコンパクトに伝える。scan.tsv の中身を長々と貼らない。
+ユーザーへの報告は以下をコンパクトに伝える。scan-result.tsv の中身を長々と貼らない。
 
-- 出力ファイル: `./output/codebase-scan/<調査名>/<YYYYMMDD-HHMM>/scan.tsv` の絶対パス
+- 出力ファイル: `./output/codebase-scan/<調査名>/<YYYYMMDD-HHMM>/scan-result.tsv` の絶対パス
 - 総ヒット件数
 - リポジトリ別ヒット件数
 - キーワード別ヒット件数（上位のみ）
