@@ -1,4 +1,4 @@
-# triage-errors ローカル設定
+# extract-stacktrace ローカル設定
 
 このファイルを `config.local.md` にコピーして、自社環境に合わせて記入してください。
 `config.local.md` は gitignore されているためコミットされません。

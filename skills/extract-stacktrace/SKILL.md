@@ -1,6 +1,6 @@
 ---
-name: triage-errors
-description: 指定された機能IDのスタックトレースをログから取得する。エラー解析の際に使用する。
+name: extract-stacktrace
+description: 指定された機能IDに該当するスタックトレースをログから抽出する。エラー解析の際に使用する。
 ---
 
 # 概要
@@ -33,6 +33,6 @@ ERRORレベルのログエントリからスタックトレースを完全に取
 
 抽出したエラーはファイルに出力する。ユーザーにはファイルパスと抽出件数のサマリーのみ伝える。
 
-- 出力先: `./triage-output/errors-YYYYMMDD-HHMMSS.md`
+- 出力先: `./output/extract-stacktrace/stacktrace-<YYYYMMDD-HHMMSS>.md`（プロジェクトルート相対）
 - エラー行 + 完全なスタックトレースをセットで記載
 - 複数件ある場合は時系列順にすべて記載する（グルーピングや省略はしない）
