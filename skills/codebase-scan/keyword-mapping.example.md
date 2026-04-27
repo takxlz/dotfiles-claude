@@ -1,3 +1,14 @@
+# codebase-scan キーワードマッピング
+
+このファイルを `keyword-mapping.local.md` にコピーして、自社環境に合わせて記入してください。
+`keyword-mapping.local.md` は gitignore されているためコミットされません。
+
+```
+cp keyword-mapping.example.md keyword-mapping.local.md
+```
+
+形式: `日本語概念: 候補1, 候補2, ...`（grep 候補の優先投入元になる）。
+
 # ドメイン用語
 
 - （例）職員: shokuin, employee, staff, jinji # 旧コードは jinji
